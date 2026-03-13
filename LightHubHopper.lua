@@ -17,7 +17,7 @@ table.insert(_G.HopBlacklist,game.JobId)
 -- UI
 -------------------------------------------------
 
-local sg = Instance.new("ScreenGui",player.PlayerGui)
+local sg = Instance.new("ScreenGui",game.CoreGui)
 sg.Name = "LightHub_System"
 
 local main = Instance.new("Frame",sg)

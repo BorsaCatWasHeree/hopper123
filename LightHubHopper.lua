@@ -1,126 +1,292 @@
--- LightHub V95: 10-16 Player Focused Server Hop
+-- LightHub Ultra Stable Server Hop
+
 repeat task.wait() until game:IsLoaded()
 
 local player = game.Players.LocalPlayer
-local uis = game:GetService("UserInputService")
 local ts = game:GetService("TeleportService")
 local hs = game:GetService("HttpService")
+local uis = game:GetService("UserInputService")
 
--- TEMİZLİK
-if player.PlayerGui:FindFirstChild("LightHub_Final") then player.PlayerGui.LightHub_Final:Destroy() end
-
-local sg = Instance.new("ScreenGui", player.PlayerGui)
-sg.Name = "LightHub_Final"
-sg.ResetOnSpawn = false
-
--- ANA PANEL
-local main = Instance.new("Frame", sg)
-main.Name = "Main"
-main.Size = UDim2.new(0, 200, 0, 245)
-main.Position = UDim2.new(0.02, 0, 0.4, 0)
-main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-main.Active = true; main.Draggable = true 
-Instance.new("UICorner", main)
-
--- GERİ AÇMA (LN - SÜRÜKLENEBİLİR)
-local openBtn = Instance.new("TextButton", sg)
-openBtn.Size = UDim2.new(0, 45, 0, 45); openBtn.Position = UDim2.new(0, 5, 0.5, -22)
-openBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25); openBtn.Text = "LN"
-openBtn.TextColor3 = Color3.fromRGB(255, 200, 0); openBtn.Font = "FredokaOne"
-openBtn.TextSize = 22; openBtn.Visible = false; openBtn.Active = true; openBtn.Draggable = true
-Instance.new("UICorner", openBtn)
-openBtn.MouseButton1Click:Connect(function() main.Visible = true; openBtn.Visible = false end)
-
--- BAŞLIK
-local header = Instance.new("Frame", main)
-header.Size = UDim2.new(1, 0, 0, 40); header.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Instance.new("UICorner", header)
-
-local mainTitle = Instance.new("TextLabel", header)
-mainTitle.Size = UDim2.new(1, 0, 1, 0); mainTitle.Position = UDim2.new(0.1, 0, 0, 0)
-mainTitle.Text = "LIGHTHUB"; mainTitle.TextColor3 = Color3.fromRGB(255, 200, 0)
-mainTitle.Font = "FredokaOne"; mainTitle.TextSize = 14; mainTitle.BackgroundTransparency = 1
-mainTitle.TextXAlignment = Enum.TextXAlignment.Left
-
--- KONTROLLER
-local function createCtrl(txt, posX, color, callback)
-    local b = Instance.new("TextButton", header)
-    b.Size = UDim2.new(0, 22, 0, 22); b.Position = UDim2.new(1, posX, 0.5, -11)
-    b.BackgroundColor3 = color; b.Text = txt; b.TextColor3 = Color3.new(1,1,1)
-    b.Font = "FredokaOne"; b.TextSize = 14; Instance.new("UICorner", b)
-    b.MouseButton1Click:Connect(callback)
+if not _G.HopBlacklist then
+_G.HopBlacklist = {}
 end
 
-createCtrl("-", -55, Color3.fromRGB(45, 45, 45), function() main.Visible = false; openBtn.Visible = true end)
-createCtrl("X", -28, Color3.fromRGB(200, 50, 50), function() sg:Destroy() end)
+table.insert(_G.HopBlacklist,game.JobId)
 
--- BUTONLAR
-local function addBtn(txt, color, y, callback)
-    local b = Instance.new("TextButton", main)
-    b.Size = UDim2.new(0, 180, 0, 38); b.Position = UDim2.new(0.5, -90, 0, y)
-    b.BackgroundColor3 = color; b.Text = txt; b.TextColor3 = Color3.new(1,1,1)
-    b.Font = "FredokaOne"; b.TextSize = 13; Instance.new("UICorner", b)
-    b.MouseButton1Click:Connect(callback)
+-------------------------------------------------
+-- UI
+-------------------------------------------------
+
+local sg = Instance.new("ScreenGui",player.PlayerGui)
+sg.Name = "LightHub_System"
+
+local main = Instance.new("Frame",sg)
+main.Size = UDim2.new(0,200,0,230)
+main.Position = UDim2.new(0.05,0,0.35,0)
+main.BackgroundColor3 = Color3.fromRGB(15,15,15)
+main.Active = true
+main.Draggable = true
+Instance.new("UICorner",main)
+
+local header = Instance.new("Frame",main)
+header.Size = UDim2.new(1,0,0,30)
+header.BackgroundColor3 = Color3.fromRGB(25,25,25)
+Instance.new("UICorner",header)
+
+local title = Instance.new("TextLabel",header)
+title.Size = UDim2.new(1,-60,1,0)
+title.Position = UDim2.new(0,10,0,0)
+title.BackgroundTransparency = 1
+title.Text = "LIGHTHUB"
+title.Font = Enum.Font.FredokaOne
+title.TextSize = 18
+title.TextColor3 = Color3.fromRGB(255,200,0)
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-------------------------------------------------
+-- MINIMIZE / CLOSE BUTTONS
+-------------------------------------------------
+
+local minimize = Instance.new("TextButton",header)
+minimize.Size = UDim2.new(0,20,0,20)
+minimize.Position = UDim2.new(1,-45,0.5,-10)
+minimize.Text = "-"
+minimize.Font = Enum.Font.FredokaOne
+minimize.TextSize = 18
+minimize.BackgroundColor3 = Color3.fromRGB(60,60,60)
+minimize.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner",minimize)
+
+local close = Instance.new("TextButton",header)
+close.Size = UDim2.new(0,20,0,20)
+close.Position = UDim2.new(1,-20,0.5,-10)
+close.Text = "X"
+close.Font = Enum.Font.FredokaOne
+close.TextSize = 14
+close.BackgroundColor3 = Color3.fromRGB(170,0,0)
+close.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner",close)
+
+-------------------------------------------------
+-- LN LOGO
+-------------------------------------------------
+
+local logo = Instance.new("TextButton",sg)
+logo.Size = UDim2.new(0,60,0,60)
+logo.Position = UDim2.new(0.05,0,0.35,0)
+logo.Text = "LN"
+logo.Font = Enum.Font.FredokaOne
+logo.TextSize = 24
+logo.BackgroundColor3 = Color3.fromRGB(20,20,20)
+logo.TextColor3 = Color3.fromRGB(255,200,0)
+logo.Visible = false
+logo.Active = true
+logo.Draggable = true
+Instance.new("UICorner",logo)
+
+-------------------------------------------------
+-- DISCORD TEXT
+-------------------------------------------------
+
+local discord = Instance.new("TextButton",main)
+discord.Size = UDim2.new(1,0,0,18)
+discord.Position = UDim2.new(0,0,1,-20)
+discord.BackgroundTransparency = 1
+discord.Text = "discord.gg/yokatemz"
+discord.Font = Enum.Font.FredokaOne
+discord.TextSize = 11
+discord.TextColor3 = Color3.fromRGB(255,200,0)
+
+discord.MouseButton1Click:Connect(function()
+if setclipboard then
+setclipboard("https://discord.gg/lightnw")
+discord.Text = "COPIED!"
+task.wait(1.5)
+discord.Text = "discord.gg/lightnw"
 end
-
--- SERVER HOP (CROWD HUNTER - MIN 10 PLAYER)
-addBtn("SERVER HOP", Color3.fromRGB(120, 0, 255), 50, function()
-    local url = "https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Desc&limit=100"
-    local success, response = pcall(function() return hs:JSONDecode(game:HttpGet(url)) end)
-    
-    if success and response.data then
-        local validServers = {}
-        for _, v in pairs(response.data) do
-            -- Filtre: 10 kişiden fazla, sunucu full değil ve şu anki sunucu değil
-            if v.playing >= 10 and v.playing < v.maxPlayers and v.id ~= game.JobId then
-                table.insert(validServers, v.id)
-            end
-        end
-        
-        -- Eğer 10+ kişi olan sunucu bulamazsa, en azından 5+ olanlara bak
-        if #validServers == 0 then
-            for _, v in pairs(response.data) do
-                if v.playing >= 5 and v.playing < v.maxPlayers and v.id ~= game.JobId then
-                    table.insert(validServers, v.id)
-                end
-            end
-        end
-
-        if #validServers > 0 then
-            ts:TeleportToPlaceInstance(game.PlaceId, validServers[math.random(1, #validServers)], player)
-        else
-            ts:Teleport(game.PlaceId, player) -- Hiç bulamazsa rastgele at
-        end
-    else
-        ts:Teleport(game.PlaceId, player)
-    end
 end)
 
+-------------------------------------------------
+-- BUTTON CREATOR
+-------------------------------------------------
+
+local function btn(t,c,y,f)
+
+local b = Instance.new("TextButton",main)
+b.Size = UDim2.new(0,170,0,35)
+b.Position = UDim2.new(0.5,-85,0,y)
+b.BackgroundColor3 = c
+b.Text = t
+b.Font = Enum.Font.FredokaOne
+b.TextSize = 13
+b.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner",b)
+
+b.MouseButton1Click:Connect(f)
+
+end
+
+-------------------------------------------------
+-- SERVER HOP SYSTEM
+-------------------------------------------------
+
+local hopping = false
+local servers = {}
+local index = 1
+
+local function loadServers()
+
+servers = {}
+local cursor = ""
+
+repeat
+
+local url =
+"https://games.roblox.com/v1/games/"..
+game.PlaceId..
+"/servers/Public?sortOrder=Desc&limit=100&cursor="..
+cursor
+
+local success,res = pcall(function()
+return hs:JSONDecode(game:HttpGet(url))
+end)
+
+if success and res and res.data then
+
+for _,s in pairs(res.data) do
+
+if s.id ~= game.JobId and not table.find(_G.HopBlacklist,s.id) then
+
+local fullness = s.playing / s.maxPlayers
+
+if fullness >= 0.6 then
+table.insert(servers,s.id)
+end
+
+end
+
+end
+
+cursor = res.nextPageCursor or ""
+
+end
+
+task.wait(0.3)
+
+until cursor == "" or #servers > 40
+
+end
+
+ts.TeleportInitFailed:Connect(function(plr,result)
+
+if plr ~= player then return end
+
+task.wait(1)
+
+index += 1
+
+if servers[index] then
+ts:TeleportToPlaceInstance(game.PlaceId,servers[index],player)
+end
+
+end)
+
+btn("SERVER HOP",Color3.fromRGB(130,0,255),45,function()
+
+if hopping then return end
+hopping = true
+
+loadServers()
+
+index = 1
+
+if servers[index] then
+
+table.insert(_G.HopBlacklist,servers[index])
+
+ts:TeleportToPlaceInstance(game.PlaceId,servers[index],player)
+
+end
+
+task.wait(2)
+hopping = false
+
+end)
+
+-------------------------------------------------
 -- REJOIN
-addBtn("REJOIN", Color3.fromRGB(0, 150, 100), 95, function()
-    ts:SetTeleportGui(Instance.new("ScreenGui"))
-    pcall(function() ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, player) end)
-    task.delay(0.5, function() ts:Teleport(game.PlaceId, player) end)
+-------------------------------------------------
+
+btn("REJOIN",Color3.fromRGB(0,170,120),85,function()
+
+ts:TeleportToPlaceInstance(game.PlaceId,game.JobId,player)
+
 end)
 
-addBtn("INSTANT RESET (F4)", Color3.fromRGB(180, 80, 0), 140, function()
-    if player.Character:FindFirstChild("Humanoid") then player.Character.Humanoid.Health = 0 end
+-------------------------------------------------
+-- RESET
+-------------------------------------------------
+
+btn("RESET (F4)",Color3.fromRGB(200,120,0),125,function()
+
+if player.Character and player.Character:FindFirstChild("Humanoid") then
+player.Character.Humanoid.Health = 0
+end
+
 end)
 
-addBtn("INSTANT EXIT (F5)", Color3.fromRGB(200, 0, 0), 185, function()
-    game:Shutdown()
+-------------------------------------------------
+-- EXIT
+-------------------------------------------------
+
+btn("EXIT (F5)",Color3.fromRGB(220,0,0),165,function()
+
+game:Shutdown()
+
 end)
 
--- DISCORD
-local dc = Instance.new("TextLabel", main)
-dc.Size = UDim2.new(1, 0, 0, 20); dc.Position = UDim2.new(0, 0, 1, -22)
-dc.BackgroundTransparency = 1; dc.Text = "discord.gg/lightnw"
-dc.TextColor3 = Color3.new(1,1,1); dc.Font = "FredokaOne"; dc.TextSize = 12
+-------------------------------------------------
+-- MINIMIZE / CLOSE FUNCTIONS
+-------------------------------------------------
 
--- KISAYOLLAR
-uis.InputBegan:Connect(function(i, g)
-    if not g then
-        if i.KeyCode == Enum.KeyCode.F4 then player.Character.Humanoid.Health = 0
-        elseif i.KeyCode == Enum.KeyCode.F5 then game:Shutdown() end
-    end
+minimize.MouseButton1Click:Connect(function()
+
+main.Visible = false
+logo.Visible = true
+
+end)
+
+close.MouseButton1Click:Connect(function()
+
+sg:Destroy()
+
+end)
+
+logo.MouseButton1Click:Connect(function()
+
+main.Visible = true
+logo.Visible = false
+
+end)
+
+-------------------------------------------------
+-- HOTKEYS
+-------------------------------------------------
+
+uis.InputBegan:Connect(function(i,g)
+
+if not g then
+
+if i.KeyCode == Enum.KeyCode.F4 then
+if player.Character then
+player.Character.Humanoid.Health = 0
+end
+end
+
+if i.KeyCode == Enum.KeyCode.F5 then
+game:Shutdown()
+end
+
+end
+
 end)
